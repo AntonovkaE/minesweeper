@@ -1,11 +1,13 @@
 let gameOver = false;
+let sizeX = 10;
+let sizeY = 10;
 
-function cell(row, column, isOpened, marked, mined, minesCount) {
+function cell(row, column, opened, marked, mined, minesCount) {
   return {
     id: row + '-' + column,
     row,
     column,
-    isOpened,
+    opened,
     marked,
     mined,
     minesCount,
@@ -13,14 +15,17 @@ function cell(row, column, isOpened, marked, mined, minesCount) {
 }
 
 function board(sizeX, sizeY, mineCount) {
+  sizeX = sizeX
+  sizeY = sizeY
   let field = {};
-  for (let row = 0; row <= sizeX; row++) {
-    for (let col = 0; col <= sizeY; col++) {
-      field[row + '' + col] = cell(row, col, false, false, false, 0);
+  for (let row = 0; row < sizeX; row++) {
+    for (let col = 0; col < sizeY; col++) {
+      field[row + '-' + col] = cell(row, col, false, false, false, 0);
     }
-    field = setMines(field, mineCount);
-    field = calcNeighbors(field, sizeY, sizeX);
   }
+  setMines(field, sizeX, sizeY, mineCount);
+  calcNeighbors(field);
+  return field
 }
 
 const getRandomInteger = function (min, max) {
@@ -30,7 +35,7 @@ const getRandomInteger = function (min, max) {
 function getRandomCoors(sizeX, sizeY) {
   let randomRow = getRandomInteger(0, sizeX);
   let randomColumn = getRandomInteger(0, sizeY);
-  return randomRow + '' + randomColumn;
+  return randomRow + '-' + randomColumn;
 }
 
 function setMines(field, sizeX, sizeY, minesCount) {
@@ -46,21 +51,17 @@ function setMines(field, sizeX, sizeY, minesCount) {
   return field;
 }
 
-const calcNeighbors = function (field, sizeX, sizeY) {
-  let cell;
-  let neighborMineCount = 0;
-  for (let row = 0; row < sizeX; row++) {
-    for (let column = 0; column < sizeY; column++) {
-      let id = row + '-' + column;
-      cell = field[id];
-      if (!cell.mined) {
-        let neighbors = getNeighbors(id);
-        neighborMineCount = 0;
-        for (let i = 0; i < neighbors.length; i++) {
-          neighborMineCount += isMined(field, neighbors[i]);
-        }
-        cell.minesCount = neighborMineCount;
-      }
+const calcNeighbors = function (field) {
+  console.log('calc')
+  for (let cellId in field) {
+    if (!field[cellId].mined) {
+      let neighbors = getNeighbors(cellId);
+      // console.log(neighbors)
+      let neighborMineCount = 0;
+      neighbors.forEach(neighbor => {
+        neighborMineCount += isMined(field, neighbor)
+      })
+      field[cellId].minesCount = neighborMineCount;
     }
   }
   return field;
@@ -78,12 +79,14 @@ const getNeighbors = function (id) {
   neighbors.push((row + 1) + '-' + (column - 1));
   neighbors.push((row + 1) + '-' + column);
   neighbors.push((row + 1) + '-' + (column + 1));
+  console.log(id, neighbors)
   for (let i = 0; i < neighbors.length; i++) {
-    if (neighbors[i].length > 2) {
+    if (neighbors[i].length < 2) {
       neighbors.splice(i, 1);
       i--;
     }
   }
+  console.log(id, neighbors)
   return neighbors;
 };
 
@@ -93,6 +96,7 @@ const isMined = function (board, id) {
   if (typeof cell !== 'undefined') {
     mined = cell.mined ? true : false;
   }
+  console.log(mined)
   return mined;
 };
 
@@ -110,24 +114,26 @@ function loss() {
   gameOver = true;
 }
 
-const handleClick = function (id) {
+const handleClick = function (cell, cellButton) {
+  console.log(cell)
   if (!gameOver) {
     if (isSetFlag(event)) {
-      setFlag(id);
+      setFlag(cell);
     } else {
-      const cell = board[id];
       if (!cell.opened && !cell.marked) {
         if (cell.mined) {
-          // игра проиграна
+          alert('game over')
           loss();
         } else {
+          cellButton.classList.add('button-cell_opened')
           //открываем ячейку
           cell.opened = true;
           if (cell.minesCount > 0) {
+            cellButton.textContent = cell.minesCount
           //  добавляем на ячейку количество бобм по соседству
           } else {
             //если по соседству нет бомб
-            const neighbors = getNeighbors(id);
+            const neighbors = getNeighbors(cell.id);
             neighbors.forEach(neighbor => {
               if (typeof board[neighbor] !== 'undefined' && !board[neighbor].marked && !board[neighbor].opened) {
                 handleClick(neighbor)
@@ -139,3 +145,27 @@ const handleClick = function (id) {
     }
   }
 };
+let myBoard = board(10, 10, 10)
+
+const fieldTag = document.createElement('div')
+fieldTag.classList.add('field')
+fieldTag.style.gridTemplateColumns = ``;
+
+fieldTag.setAttribute('style', `grid-template-columns: repeat(${sizeY}, 20px); grid-template-rows: repeat(${sizeX}, 20px)`)
+
+
+
+for (let cell in myBoard) {
+  let cellButton = document.createElement('button');
+  cellButton.classList.add('button-cell')
+
+  cellButton.addEventListener('click', (event) => {
+    handleClick(myBoard[cell], cellButton)
+  })
+  fieldTag.append(cellButton)
+
+}
+
+document.querySelector('body').append(fieldTag)
+
+

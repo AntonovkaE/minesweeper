@@ -1,0 +1,15 @@
+.button-cell {
+  margin: 0;
+  border: 1px solid olivedrab;
+  background-color: lavender;
+}
+
+
+.field {
+  gap: 0;
+  display: grid;
+}
+
+.button-cell_opened {
+  background-color: lavenderblush;
+}

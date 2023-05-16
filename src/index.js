@@ -1,6 +1,8 @@
 let gameOver = false;
 let sizeX = 10;
 let sizeY = 10;
+let openedCellCount = 0;
+let mineCount = 1;
 
 function cell(row, column, opened, marked, mined, minesCount) {
   return {
@@ -15,8 +17,6 @@ function cell(row, column, opened, marked, mined, minesCount) {
 }
 
 function board(sizeX, sizeY, mineCount) {
-  sizeX = sizeX
-  sizeY = sizeY
   let field = {};
   for (let row = 0; row < sizeX; row++) {
     for (let col = 0; col < sizeY; col++) {
@@ -25,7 +25,7 @@ function board(sizeX, sizeY, mineCount) {
   }
   setMines(field, sizeX, sizeY, mineCount);
   calcNeighbors(field);
-  return field
+  return field;
 }
 
 const getRandomInteger = function (min, max) {
@@ -52,15 +52,13 @@ function setMines(field, sizeX, sizeY, minesCount) {
 }
 
 const calcNeighbors = function (field) {
-  console.log('calc')
   for (let cellId in field) {
     if (!field[cellId].mined) {
       let neighbors = getNeighbors(cellId);
-      // console.log(neighbors)
       let neighborMineCount = 0;
       neighbors.forEach(neighbor => {
-        neighborMineCount += isMined(field, neighbor)
-      })
+        neighborMineCount += isMined(field, neighbor);
+      });
       field[cellId].minesCount = neighborMineCount;
     }
   }
@@ -79,14 +77,12 @@ const getNeighbors = function (id) {
   neighbors.push((row + 1) + '-' + (column - 1));
   neighbors.push((row + 1) + '-' + column);
   neighbors.push((row + 1) + '-' + (column + 1));
-  console.log(id, neighbors)
   for (let i = 0; i < neighbors.length; i++) {
     if (neighbors[i].length < 2) {
       neighbors.splice(i, 1);
       i--;
     }
   }
-  console.log(id, neighbors)
   return neighbors;
 };
 
@@ -96,7 +92,7 @@ const isMined = function (board, id) {
   if (typeof cell !== 'undefined') {
     mined = cell.mined ? true : false;
   }
-  console.log(mined)
+  // console.log(mined);
   return mined;
 };
 
@@ -112,60 +108,75 @@ function isSetFlag(event) {
 
 function loss() {
   gameOver = true;
+  alert('Game over. Try again');
+}
+
+function win() {
+  alert('Hooray! You found all mines in ## seconds and N moves!');
 }
 
 const handleClick = function (cell, cellButton) {
-  console.log(cell)
   if (!gameOver) {
-    if (isSetFlag(event)) {
-      setFlag(cell);
-    } else {
-      if (!cell.opened && !cell.marked) {
-        if (cell.mined) {
-          alert('game over')
-          loss();
-        } else {
-          cellButton.classList.add('button-cell_opened')
-          //открываем ячейку
-          cell.opened = true;
-          if (cell.minesCount > 0) {
-            cellButton.textContent = cell.minesCount
+    if (!cell.opened && !cell.marked) {
+      if (cell.mined) {
+        loss();
+      } else {
+        cellButton.classList.add('button-cell_opened');
+        openedCellCount++;
+        console.log(openedCellCount, mineCount, sizeY*sizeY)
+        if ((sizeY * sizeY - mineCount - openedCellCount) == 0) {
+          win();
+          return;
+        }
+        //открываем ячейку
+        cell.opened = true;
+        if (cell.minesCount > 0) {
+          cellButton.textContent = cell.minesCount;
           //  добавляем на ячейку количество бобм по соседству
-          } else {
-            //если по соседству нет бомб
-            const neighbors = getNeighbors(cell.id);
-            neighbors.forEach(neighbor => {
-              if (typeof board[neighbor] !== 'undefined' && !board[neighbor].marked && !board[neighbor].opened) {
-                handleClick(neighbor)
-              }
-            })
-          }
+        } else {
+          //если по соседству нет бомб
+          const neighbors = getNeighbors(cell.id);
+          neighbors.forEach(neighbor => {
+            if (typeof board[neighbor] !== 'undefined' && !board[neighbor].marked && !board[neighbor].opened) {
+              handleClick(neighbor);
+            }
+          });
         }
       }
     }
   }
 };
-let myBoard = board(10, 10, 10)
 
-const fieldTag = document.createElement('div')
-fieldTag.classList.add('field')
-fieldTag.style.gridTemplateColumns = ``;
+function startGame (x = 10, y, minesCount) {
+  console.log(mineCount, 'df')
+  sizeY = y;
+  sizeX = x
+  mineCount = minesCount
+  openedCellCount = 0;
+  gameOver = false;
+  let myBoard = board(sizeX, sizeY, mineCount);
+  const fieldTag = document.createElement('div');
+  fieldTag.classList.add('field');
+  fieldTag.style.gridTemplateColumns = ``;
 
-fieldTag.setAttribute('style', `grid-template-columns: repeat(${sizeY}, 20px); grid-template-rows: repeat(${sizeX}, 20px)`)
+  fieldTag.setAttribute('style', `grid-template-columns: repeat(${sizeY}, 20px); grid-template-rows: repeat(${sizeX}, 20px)`);
 
+  for (let cell in myBoard) {
+    let cellButton = document.createElement('button');
+    cellButton.classList.add('button-cell');
 
-
-for (let cell in myBoard) {
-  let cellButton = document.createElement('button');
-  cellButton.classList.add('button-cell')
-
-  cellButton.addEventListener('click', (event) => {
-    handleClick(myBoard[cell], cellButton)
-  })
-  fieldTag.append(cellButton)
-
+    cellButton.addEventListener('click', (event) => {
+      handleClick(myBoard[cell], cellButton);
+    });
+    fieldTag.append(cellButton);
+  }
+  document.querySelector('body').append(fieldTag);
 }
 
-document.querySelector('body').append(fieldTag)
+startGame(3, 3, 1)
+
+
+
+
 
 

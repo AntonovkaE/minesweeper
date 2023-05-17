@@ -11,16 +11,20 @@ let isTimerStarted = false;
 let myBoard
 let movingCounter = 0
 
+
+const main = document.createElement('main')
+document.querySelector('body').append(main)
 const startBtn = document.createElement('button');
 startBtn.classList.add('startBtn');
 startBtn.textContent = 'Начать новую игру';
-document.querySelector('body').append(startBtn);
+main.append(startBtn);
 
 const timerDiv = document.createElement('div');
+timerDiv.classList.add('timer')
 const timer = document.createElement('h1');
 timer.textContent = '00:00:00';
 timerDiv.append(timer);
-document.querySelector('body').prepend(timerDiv);
+main.prepend(timerDiv);
 
 function cell(row, column, opened, marked, mined, minesCount) {
   return {
@@ -233,7 +237,7 @@ function startGame(x = 10, y, minesCount) {
   fieldTag.classList.add('field');
   fieldTag.style.gridTemplateColumns = ``;
 
-  fieldTag.setAttribute('style', `grid-template-columns: repeat(${sizeY}, 20px); grid-template-rows: repeat(${sizeX}, 20px)`);
+  fieldTag.setAttribute('style', `grid-template-columns: repeat(${sizeY}, 2rem); grid-template-rows: repeat(${sizeX}, 2rem)`);
 
   for (let cell in myBoard) {
     let cellButton = document.createElement('button');
@@ -253,7 +257,7 @@ function startGame(x = 10, y, minesCount) {
     });
     fieldTag.append(cellButton);
   }
-  document.querySelector('body').append(fieldTag);
+  main.append(fieldTag);
 }
 
 startGame(3, 3, 5);

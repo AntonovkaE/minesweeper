@@ -1,13 +1,28 @@
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .button-cell {
   margin: 0;
   border: 1px solid olivedrab;
   background-color: lavender;
 }
 
+.startBtn {
+  max-width: 300px;
+  background-color: lemonchiffon;
+  padding: 2%;
+  border: none;
+  border-radius: 15%;
+}
 
 .field {
   gap: 0;
   display: grid;
+  margin: 5% auto;
 }
 
 .button-cell_opened {

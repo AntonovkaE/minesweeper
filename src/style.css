@@ -18,7 +18,7 @@ main {
   align-items: center;
   width: 50%;
   flex-direction: column;
-  margin: 5% auto;
+  margin: 0 auto;
 }
 
 form {
@@ -36,6 +36,13 @@ label {
   margin: 5%;
   text-align: center;
 }
+
+.label-mines {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
 .startBtn {
   max-width: 300px;
   background-color: lemonchiffon;
@@ -47,7 +54,7 @@ label {
 .field {
   gap: 0;
   display: grid;
-  margin: 5% auto;
+  margin: 2% auto;
 }
 
 .button-cell_opened {
@@ -82,4 +89,17 @@ label {
   background-image: url("./assets/img/png-transparent-flag-flag-of-turkey-red-flag-black-black-and-white-silhouette-line-angle.png");
   background-position: center;
   background-size: contain;
+}
+
+.input-mines {
+  width: 50px;
+  text-align: center;
+  margin: 0 7%;
+}
+
+@media  screen and (min-width: 768px){
+  .level-buttons {
+    flex-direction: row;
+  }
+
 }

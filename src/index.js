@@ -23,6 +23,8 @@ const minesCountLabel = document.createElement('label');
 const minesCountInput = document.createElement('input');
 minesCountInput.value = 10;
 minesCountInput.max = 100;
+minesCountInput.classList.add('input-mines');
+minesCountLabel.classList.add('label-mines')
 minesCountLabel.textContent = `Количество бомб`;
 minesCountInput.type = 'number';
 minesCountInput.required = true;

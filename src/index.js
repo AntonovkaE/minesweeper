@@ -23,11 +23,13 @@ const minesCountLabel = document.createElement('label');
 const minesCountInput = document.createElement('input');
 minesCountInput.value = 10;
 minesCountInput.max = 100;
-minesCountLabel.textContent = `Количество бомб. Максимальное количество ${minesCountInput.max}`;
+minesCountLabel.textContent = `Количество бомб`;
 minesCountInput.type = 'number';
 minesCountInput.required = true;
 minesCountInput.name = 'mines';
-minesCountLabel.append(minesCountInput);
+const maxCountSpan = document.createElement('span')
+maxCountSpan.textContent = `Максимальное количество ${minesCountInput.max}`
+minesCountLabel.append(minesCountInput, maxCountSpan);
 const levelButtons = document.createElement('div');
 levelButtons.classList.add('level-buttons');
 const easyLevelLabel = document.createElement('label');
@@ -76,8 +78,8 @@ levelForm.onsubmit = (e) => {
 levelForm.onchange = (e) => {
   if (e.target.name == 'level') {
     curLevel = e.target.value;
-    minesCountInput.max = +e.target.value * +e.target.value;
-    minesCountLabel.textContent = `Количество бомб. Максимальное количество ${minesCountInput.max}`;
+    minesCountInput.max = +curLevel * +curLevel;
+    maxCountSpan.textContent = `Максимальное количество ${minesCountInput.max}`
 
   } else if (e.target.name == 'mines') {
     mineCount = +e.target.value;
@@ -86,17 +88,6 @@ levelForm.onchange = (e) => {
 
 levelForm.append(levelButtons, minesCountLabel, startBtn);
 main.append(levelForm);
-
-// function setLevel(level, mines) {
-//   switch (level) {
-//     case 'easy':
-//       return { x: 15, y: 15, mines: mines > 100 ? 100 : mines }
-//     case 'medium':
-//       return { x: 15, y: 15, mines: mines > 15*15 ? 15*15 : mines };
-//     case 'hard':
-//       return { x: 25, y: 25, mines: mines > 25*25 ? 25*25 : mines };
-//   }
-// }
 
 const timerDiv = document.createElement('div');
 timerDiv.classList.add('timer');
@@ -249,8 +240,8 @@ function loss() {
 
 function win() {
   clearInterval(interval);
-  let hoursString = hours ? `${hours} hours` : ''
-  let minutesString = minutes ? `${minutes} minutes` : ''
+  let hoursString = hours ? `${hours} hours` : '';
+  let minutesString = minutes ? `${minutes} minutes` : '';
   alert(`Hooray! You found all mines in ${hoursString} ${minutesString} ${seconds} seconds and ${movingCounter} moves!`);
   seconds = 0;
   minutes = 0;
@@ -348,6 +339,3 @@ function startGame(x = 10, y = 10, minesCount) {
 }
 
 startGame(10, 10, 10);
-
-
-

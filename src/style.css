@@ -11,6 +11,32 @@ main {
   background-color: lavender;
 }
 
+.level-buttons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  flex-direction: column;
+  margin: 5% auto;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  max-width: 80%;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  margin: 5% ;
+}
+
 .startBtn {
   max-width: 300px;
   background-color: lemonchiffon;

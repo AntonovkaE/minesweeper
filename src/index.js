@@ -8,19 +8,92 @@ let seconds;
 let minutes;
 let hours;
 let isTimerStarted = false;
-let myBoard
-let movingCounter = 0
+let myBoard;
+let movingCounter = 0;
+let curLevel = 'easy'
 
+const main = document.createElement('main');
+document.querySelector('body').append(main);
 
-const main = document.createElement('main')
-document.querySelector('body').append(main)
+const levelForm = document.createElement('form');
+
+const minesCountLabel = document.createElement('label');
+minesCountLabel.textContent = 'Количество бомб';
+const minesCountInput = document.createElement('input');
+minesCountInput.value = 10;
+minesCountInput.name = 'mines'
+minesCountLabel.append(minesCountInput);
+const levelButtons = document.createElement('div');
+levelButtons.classList.add('level-buttons');
+const easyLevelLabel = document.createElement('label');
+easyLevelLabel.textContent = 'easy';
+const mediumLevelLabel = document.createElement('label');
+mediumLevelLabel.textContent = 'medium';
+const hardLevelLabel = document.createElement('label');
+hardLevelLabel.textContent = 'hard';
+const easyLevelButton = document.createElement('input');
+easyLevelButton.classList.add('input_easy-level');
+easyLevelButton.type = 'radio';
+easyLevelButton.checked = true
+easyLevelButton.name = 'level';
+easyLevelButton.value = 'easy';
+easyLevelButton.textContent = 'easy';
+easyLevelLabel.append(easyLevelButton);
+const mediumLevelButton = document.createElement('input');
+mediumLevelButton.type = 'radio';
+mediumLevelButton.name = 'level';
+mediumLevelButton.value = 'medium';
+mediumLevelButton.classList.add('input_medium-level');
+mediumLevelLabel.append(mediumLevelButton);
+const hardLevelButton = document.createElement('input');
+hardLevelButton.classList.add('input_hard-level');
+hardLevelButton.type = 'radio';
+hardLevelButton.value = 'hard';
+hardLevelButton.name = 'level';
+hardLevelLabel.append(hardLevelButton);
+levelButtons.append(easyLevelLabel, mediumLevelLabel, hardLevelLabel);
 const startBtn = document.createElement('button');
 startBtn.classList.add('startBtn');
+startBtn.type = 'submit';
 startBtn.textContent = 'Начать новую игру';
-main.append(startBtn);
+levelForm.onsubmit = (e) => {
+  e.preventDefault();
+  clearInterval(interval);
+  seconds = 0;
+  minutes = 0;
+  hours = 0;
+  isTimerStarted = false;
+  timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+  document.querySelector('.field').remove();
+  const level = setLevel(curLevel, minesCountInput.value)
+  const { x, y, mines } = level
+  startGame(x, y, mines);
+};
+levelForm.onchange = (e) => {
+  if (e.target.name == 'level') {
+    curLevel = e.target.value
+  } else if (e.target.name == 'mines' ) {
+    mineCount = +e.target.value
+  }
+}
+
+levelForm.append(levelButtons, minesCountLabel, startBtn);
+main.append(levelForm);
+
+function setLevel(level, mines) {
+  switch (level) {
+    case 'easy':
+      return { x: 10, y: 10, mines: mines };
+    case 'medium':
+      return { x: 15, y: 15, mines: mines };
+    case 'hard':
+      return { x: 25, y: 25, mines: mines };
+  }
+}
 
 const timerDiv = document.createElement('div');
-timerDiv.classList.add('timer')
+timerDiv.classList.add('timer');
 const timer = document.createElement('h1');
 timer.textContent = '00:00:00';
 timerDiv.append(timer);
@@ -163,7 +236,7 @@ function loss() {
   minutes = 0;
   hours = 0;
   gameOver = true;
-  mineCount = 0
+  mineCount = 0;
   timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   alert('Game over. Try again');
 }
@@ -174,9 +247,7 @@ function win() {
   seconds = 0;
   minutes = 0;
   hours = 0;
-  movingCounter = 0
-  // isTimerStarted = false;
-
+  movingCounter = 0;
 }
 
 const handleClick = function (cell, cellButton) {
@@ -213,7 +284,6 @@ function updateTime(s, m, h) {
   s++;
   if (s === 60) {
     m++;
-
     s = 0;
   }
   if (m === 60) {
@@ -226,7 +296,8 @@ function updateTime(s, m, h) {
   timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-function startGame(x = 10, y, minesCount) {
+function startGame(x = 10, y = 10, minesCount) {
+  console.log(x, y, minesCount)
   sizeY = y;
   sizeX = x;
   mineCount = minesCount;
@@ -237,17 +308,17 @@ function startGame(x = 10, y, minesCount) {
   fieldTag.classList.add('field');
   fieldTag.style.gridTemplateColumns = ``;
 
-  fieldTag.setAttribute('style', `grid-template-columns: repeat(${sizeY}, 2rem); grid-template-rows: repeat(${sizeX}, 2rem)`);
+  fieldTag.setAttribute('style', `grid-template-columns: repeat(${sizeY}, 1.5rem); grid-template-rows: repeat(${sizeX}, 1.5rem)`);
 
   for (let cell in myBoard) {
     let cellButton = document.createElement('button');
     cellButton.classList.add('button-cell');
-    cellButton.id = cell
+    cellButton.id = cell;
 
     cellButton.addEventListener('click', (event) => {
-      movingCounter++
+      movingCounter++;
       handleClick(myBoard[cell], cellButton);
-      if (!isTimerStarted) {
+      if (!isTimerStarted && !gameOver) {
         isTimerStarted = true;
         seconds = 0;
         minutes = 0;
@@ -260,19 +331,19 @@ function startGame(x = 10, y, minesCount) {
   main.append(fieldTag);
 }
 
-startGame(3, 3, 5);
+startGame(10, 10, 10);
 
-startBtn.addEventListener('click', () => {
-  clearInterval(interval);
-  seconds = 0;
-  minutes = 0;
-  hours = 0;
-  isTimerStarted = false;
-  timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-  document.querySelector('.field').remove();
-  startGame(6, 6, 5);
-});
+// startBtn.addEventListener('click', () => {
+//   clearInterval(interval);
+//   seconds = 0;
+//   minutes = 0;
+//   hours = 0;
+//   isTimerStarted = false;
+//   timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+//
+//   document.querySelector('.field').remove();
+//   startGame(6, 6, 5);
+// });
 
 
 

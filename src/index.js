@@ -5,6 +5,11 @@ let openedCellCount = 0;
 let mineCount = 1;
 let interval;
 let seconds;
+let minutes;
+let hours;
+let isTimerStarted = false;
+let myBoard
+let movingCounter = 0
 
 const startBtn = document.createElement('button');
 startBtn.classList.add('startBtn');
@@ -150,13 +155,24 @@ function isSetFlag(event) {
 
 function loss() {
   clearInterval(interval);
+  seconds = 0;
+  minutes = 0;
+  hours = 0;
   gameOver = true;
+  mineCount = 0
+  timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   alert('Game over. Try again');
 }
 
 function win() {
   clearInterval(interval);
-  alert(`Hooray! You found all mines in ${seconds} seconds and N moves!`);
+  alert(`Hooray! You found all mines in ${seconds} seconds and ${movingCounter} moves!`);
+  seconds = 0;
+  minutes = 0;
+  hours = 0;
+  movingCounter = 0
+  // isTimerStarted = false;
+
 }
 
 const handleClick = function (cell, cellButton) {
@@ -174,14 +190,13 @@ const handleClick = function (cell, cellButton) {
         if (cell.minesCount > 0) {
           cellButton.textContent = cell.minesCount;
           setColor(cell.minesCount, cellButton);
-
           //  добавляем на ячейку количество бобм по соседству
         } else {
           //если по соседству нет бомб
           const neighbors = getNeighbors(cell.id);
           neighbors.forEach(neighbor => {
-            if (typeof board[neighbor] !== 'undefined' && !board[neighbor].marked && !board[neighbor].opened) {
-              handleClick(neighbor);
+            if (typeof myBoard[neighbor] !== 'undefined' && !myBoard[neighbor].marked && !myBoard[neighbor].opened) {
+              handleClick(myBoard[neighbor], document.getElementById(neighbor));
             }
           });
         }
@@ -190,15 +205,30 @@ const handleClick = function (cell, cellButton) {
   }
 };
 
+function updateTime(s, m, h) {
+  s++;
+  if (s === 60) {
+    m++;
+
+    s = 0;
+  }
+  if (m === 60) {
+    h++;
+    m = 0;
+  }
+  seconds = s;
+  minutes = m;
+  hours = h;
+  timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
 function startGame(x = 10, y, minesCount) {
-  createTimer();
-  let isTimerStarted = false;
   sizeY = y;
   sizeX = x;
   mineCount = minesCount;
   openedCellCount = 0;
   gameOver = false;
-  let myBoard = board(sizeX, sizeY, mineCount);
+  myBoard = board(sizeX, sizeY, mineCount);
   const fieldTag = document.createElement('div');
   fieldTag.classList.add('field');
   fieldTag.style.gridTemplateColumns = ``;
@@ -208,28 +238,17 @@ function startGame(x = 10, y, minesCount) {
   for (let cell in myBoard) {
     let cellButton = document.createElement('button');
     cellButton.classList.add('button-cell');
+    cellButton.id = cell
 
     cellButton.addEventListener('click', (event) => {
+      movingCounter++
       handleClick(myBoard[cell], cellButton);
       if (!isTimerStarted) {
         isTimerStarted = true;
         seconds = 0;
-        let minutes = 0;
-        let hours = 0;
-        interval = setInterval(updateTime, 1000);
-
-        function updateTime() {
-          seconds++;
-          if (seconds === 60) {
-            minutes++;
-            seconds = 0;
-          }
-          if (minutes === 60) {
-            hours++;
-            minutes = 0;
-          }
-          timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        }
+        minutes = 0;
+        hours = 0;
+        interval = setInterval(() => updateTime(seconds, minutes, hours), 1000);
       }
     });
     fieldTag.append(cellButton);
@@ -239,13 +258,17 @@ function startGame(x = 10, y, minesCount) {
 
 startGame(3, 3, 5);
 
-function createTimer() {
+startBtn.addEventListener('click', () => {
+  clearInterval(interval);
+  seconds = 0;
+  minutes = 0;
+  hours = 0;
+  isTimerStarted = false;
+  timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-  startBtn.addEventListener('click', () => {
-    document.querySelector('.field').remove()
-    startGame(6, 6, 5);
-  });
-}
+  document.querySelector('.field').remove();
+  startGame(6, 6, 5);
+});
 
 
 

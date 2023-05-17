@@ -317,6 +317,11 @@ function startGame(x = 10, y = 10, minesCount) {
     cellButton.classList.add('button-cell');
     cellButton.id = cell;
 
+    cellButton.addEventListener('contextmenu', e => {
+      myBoard[cell].marked = !myBoard[cell].marked
+      cellButton.classList.toggle('cell_marked')
+    })
+
     cellButton.addEventListener('click', (event) => {
       movingCounter++;
       moveCounter.textContent = `Количество шагов ${movingCounter}`

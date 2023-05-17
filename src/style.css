@@ -78,3 +78,9 @@ label {
 .cell_d-red {
   color: darkred;
 }
+
+.cell_marked {
+  background-image: url("./assets/img/png-transparent-flag-flag-of-turkey-red-flag-black-black-and-white-silhouette-line-angle.png");
+  background-position: center;
+  background-size: contain;
+}

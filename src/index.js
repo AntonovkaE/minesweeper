@@ -249,7 +249,9 @@ function loss() {
 
 function win() {
   clearInterval(interval);
-  alert(`Hooray! You found all mines in ${seconds} seconds and ${movingCounter} moves!`);
+  let hoursString = hours ? `${hours} hours` : ''
+  let minutesString = minutes ? `${minutes} minutes` : ''
+  alert(`Hooray! You found all mines in ${hoursString} ${minutesString} ${seconds} seconds and ${movingCounter} moves!`);
   seconds = 0;
   minutes = 0;
   hours = 0;
@@ -322,8 +324,10 @@ function startGame(x = 10, y = 10, minesCount) {
     cellButton.id = cell;
 
     cellButton.addEventListener('contextmenu', e => {
-      myBoard[cell].marked = !myBoard[cell].marked;
-      cellButton.classList.toggle('cell_marked');
+      if (!myBoard[cell].opened) {
+        myBoard[cell].marked = !myBoard[cell].marked;
+        cellButton.classList.toggle('cell_marked');
+      }
     });
 
     cellButton.addEventListener('click', (event) => {
@@ -344,18 +348,6 @@ function startGame(x = 10, y = 10, minesCount) {
 }
 
 startGame(10, 10, 10);
-
-// startBtn.addEventListener('click', () => {
-//   clearInterval(interval);
-//   seconds = 0;
-//   minutes = 0;
-//   hours = 0;
-//   isTimerStarted = false;
-//   timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-//
-//   document.querySelector('.field').remove();
-//   startGame(6, 6, 5);
-// });
 
 
 

@@ -17,6 +17,8 @@ document.querySelector('body').append(main);
 
 const levelForm = document.createElement('form');
 
+const moveCounter = document.createElement('h2')
+moveCounter.textContent = `Количество шагов ${movingCounter}`
 const minesCountLabel = document.createElement('label');
 minesCountLabel.textContent = 'Количество бомб';
 const minesCountInput = document.createElement('input');
@@ -317,6 +319,7 @@ function startGame(x = 10, y = 10, minesCount) {
 
     cellButton.addEventListener('click', (event) => {
       movingCounter++;
+      moveCounter.textContent = `Количество шагов ${movingCounter}`
       handleClick(myBoard[cell], cellButton);
       if (!isTimerStarted && !gameOver) {
         isTimerStarted = true;
@@ -328,7 +331,7 @@ function startGame(x = 10, y = 10, minesCount) {
     });
     fieldTag.append(cellButton);
   }
-  main.append(fieldTag);
+  main.append(fieldTag, moveCounter);
 }
 
 startGame(10, 10, 10);

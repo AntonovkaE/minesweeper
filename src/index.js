@@ -3,6 +3,19 @@ let sizeX = 10;
 let sizeY = 10;
 let openedCellCount = 0;
 let mineCount = 1;
+let interval;
+let seconds;
+
+const startBtn = document.createElement('button');
+startBtn.classList.add('startBtn');
+startBtn.textContent = 'Начать новую игру';
+document.querySelector('body').append(startBtn);
+
+const timerDiv = document.createElement('div');
+const timer = document.createElement('h1');
+timer.textContent = '00:00:00';
+timerDiv.append(timer);
+document.querySelector('body').prepend(timerDiv);
 
 function cell(row, column, opened, marked, mined, minesCount) {
   return {
@@ -96,6 +109,35 @@ const isMined = function (board, id) {
   return mined;
 };
 
+function setColor(mines, cell) {
+  switch (mines) {
+    case 1:
+      cell.classList.add('cell_green');
+      break;
+    case 2:
+      cell.classList.add('cell_yellow');
+      break;
+    case 3:
+      cell.classList.add('cell_l-blue');
+      break;
+    case 4:
+      cell.classList.add('cell_blue');
+      break;
+    case 5:
+      cell.classList.add('cell_l-purple');
+      break;
+    case 6:
+      cell.classList.add('cell_purple');
+      break;
+    case 7:
+      cell.classList.add('cell_red');
+      break;
+    case 8:
+      cell.classList.add('cell_d-red');
+      break;
+  }
+}
+
 const setFlag = function (id) {
 
   // установить флаг
@@ -107,12 +149,14 @@ function isSetFlag(event) {
 }
 
 function loss() {
+  clearInterval(interval);
   gameOver = true;
   alert('Game over. Try again');
 }
 
 function win() {
-  alert('Hooray! You found all mines in ## seconds and N moves!');
+  clearInterval(interval);
+  alert(`Hooray! You found all mines in ${seconds} seconds and N moves!`);
 }
 
 const handleClick = function (cell, cellButton) {
@@ -123,15 +167,14 @@ const handleClick = function (cell, cellButton) {
       } else {
         cellButton.classList.add('button-cell_opened');
         openedCellCount++;
-        console.log(openedCellCount, mineCount, sizeY*sizeY)
         if ((sizeY * sizeY - mineCount - openedCellCount) == 0) {
           win();
-          return;
         }
-        //открываем ячейку
         cell.opened = true;
         if (cell.minesCount > 0) {
           cellButton.textContent = cell.minesCount;
+          setColor(cell.minesCount, cellButton);
+
           //  добавляем на ячейку количество бобм по соседству
         } else {
           //если по соседству нет бомб
@@ -147,11 +190,12 @@ const handleClick = function (cell, cellButton) {
   }
 };
 
-function startGame (x = 10, y, minesCount) {
-  console.log(mineCount, 'df')
+function startGame(x = 10, y, minesCount) {
+  createTimer();
+  let isTimerStarted = false;
   sizeY = y;
-  sizeX = x
-  mineCount = minesCount
+  sizeX = x;
+  mineCount = minesCount;
   openedCellCount = 0;
   gameOver = false;
   let myBoard = board(sizeX, sizeY, mineCount);
@@ -167,16 +211,41 @@ function startGame (x = 10, y, minesCount) {
 
     cellButton.addEventListener('click', (event) => {
       handleClick(myBoard[cell], cellButton);
+      if (!isTimerStarted) {
+        isTimerStarted = true;
+        seconds = 0;
+        let minutes = 0;
+        let hours = 0;
+        interval = setInterval(updateTime, 1000);
+
+        function updateTime() {
+          seconds++;
+          if (seconds === 60) {
+            minutes++;
+            seconds = 0;
+          }
+          if (minutes === 60) {
+            hours++;
+            minutes = 0;
+          }
+          timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+      }
     });
     fieldTag.append(cellButton);
   }
   document.querySelector('body').append(fieldTag);
 }
 
-startGame(3, 3, 1)
+startGame(3, 3, 5);
 
+function createTimer() {
 
-
+  startBtn.addEventListener('click', () => {
+    document.querySelector('.field').remove()
+    startGame(6, 6, 5);
+  });
+}
 
 
 

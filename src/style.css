@@ -13,3 +13,27 @@
 .button-cell_opened {
   background-color: lavenderblush;
 }
+.cell_green {
+  color: olivedrab;
+}
+.cell_yellow {
+  color: darkgoldenrod;
+}
+.cell_l-blue {
+  color: lightblue;
+}
+.cell_blue {
+  color: blue;
+}
+.cell_l-purple {
+  color: lightpink;
+}
+.cell_purple {
+  color: purple;
+}
+.cell_red {
+  color: red;
+}
+.cell_d-red {
+  color: darkred;
+}

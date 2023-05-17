@@ -10,20 +10,23 @@ let hours;
 let isTimerStarted = false;
 let myBoard;
 let movingCounter = 0;
-let curLevel = 'easy'
+let curLevel = 'easy';
 
 const main = document.createElement('main');
 document.querySelector('body').append(main);
 
 const levelForm = document.createElement('form');
 
-const moveCounter = document.createElement('h2')
-moveCounter.textContent = `Количество шагов ${movingCounter}`
+const moveCounter = document.createElement('h2');
+moveCounter.textContent = `Количество шагов ${movingCounter}`;
 const minesCountLabel = document.createElement('label');
-minesCountLabel.textContent = 'Количество бомб';
 const minesCountInput = document.createElement('input');
 minesCountInput.value = 10;
-minesCountInput.name = 'mines'
+minesCountInput.max = 100;
+minesCountLabel.textContent = `Количество бомб. Максимальное количество ${minesCountInput.max}`;
+minesCountInput.type = 'number';
+minesCountInput.required = true;
+minesCountInput.name = 'mines';
 minesCountLabel.append(minesCountInput);
 const levelButtons = document.createElement('div');
 levelButtons.classList.add('level-buttons');
@@ -36,21 +39,21 @@ hardLevelLabel.textContent = 'hard';
 const easyLevelButton = document.createElement('input');
 easyLevelButton.classList.add('input_easy-level');
 easyLevelButton.type = 'radio';
-easyLevelButton.checked = true
+easyLevelButton.checked = true;
 easyLevelButton.name = 'level';
-easyLevelButton.value = 'easy';
+easyLevelButton.value = '10';
 easyLevelButton.textContent = 'easy';
 easyLevelLabel.append(easyLevelButton);
 const mediumLevelButton = document.createElement('input');
 mediumLevelButton.type = 'radio';
 mediumLevelButton.name = 'level';
-mediumLevelButton.value = 'medium';
+mediumLevelButton.value = '15';
 mediumLevelButton.classList.add('input_medium-level');
 mediumLevelLabel.append(mediumLevelButton);
 const hardLevelButton = document.createElement('input');
 hardLevelButton.classList.add('input_hard-level');
 hardLevelButton.type = 'radio';
-hardLevelButton.value = 'hard';
+hardLevelButton.value = '25';
 hardLevelButton.name = 'level';
 hardLevelLabel.append(hardLevelButton);
 levelButtons.append(easyLevelLabel, mediumLevelLabel, hardLevelLabel);
@@ -68,31 +71,32 @@ levelForm.onsubmit = (e) => {
   timer.textContent = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
   document.querySelector('.field').remove();
-  const level = setLevel(curLevel, minesCountInput.value)
-  const { x, y, mines } = level
-  startGame(x, y, mines);
+  startGame(curLevel.value, curLevel.value, minesCountInput.value);
 };
 levelForm.onchange = (e) => {
   if (e.target.name == 'level') {
-    curLevel = e.target.value
-  } else if (e.target.name == 'mines' ) {
-    mineCount = +e.target.value
+    curLevel = e.target.value;
+    minesCountInput.max = +e.target.value * +e.target.value;
+    minesCountLabel.textContent = `Количество бомб. Максимальное количество ${minesCountInput.max}`;
+
+  } else if (e.target.name == 'mines') {
+    mineCount = +e.target.value;
   }
-}
+};
 
 levelForm.append(levelButtons, minesCountLabel, startBtn);
 main.append(levelForm);
 
-function setLevel(level, mines) {
-  switch (level) {
-    case 'easy':
-      return { x: 10, y: 10, mines: mines };
-    case 'medium':
-      return { x: 15, y: 15, mines: mines };
-    case 'hard':
-      return { x: 25, y: 25, mines: mines };
-  }
-}
+// function setLevel(level, mines) {
+//   switch (level) {
+//     case 'easy':
+//       return { x: 15, y: 15, mines: mines > 100 ? 100 : mines }
+//     case 'medium':
+//       return { x: 15, y: 15, mines: mines > 15*15 ? 15*15 : mines };
+//     case 'hard':
+//       return { x: 25, y: 25, mines: mines > 25*25 ? 25*25 : mines };
+//   }
+// }
 
 const timerDiv = document.createElement('div');
 timerDiv.classList.add('timer');
@@ -299,7 +303,7 @@ function updateTime(s, m, h) {
 }
 
 function startGame(x = 10, y = 10, minesCount) {
-  console.log(x, y, minesCount)
+  console.log(x, y, minesCount);
   sizeY = y;
   sizeX = x;
   mineCount = minesCount;
@@ -318,13 +322,13 @@ function startGame(x = 10, y = 10, minesCount) {
     cellButton.id = cell;
 
     cellButton.addEventListener('contextmenu', e => {
-      myBoard[cell].marked = !myBoard[cell].marked
-      cellButton.classList.toggle('cell_marked')
-    })
+      myBoard[cell].marked = !myBoard[cell].marked;
+      cellButton.classList.toggle('cell_marked');
+    });
 
     cellButton.addEventListener('click', (event) => {
       movingCounter++;
-      moveCounter.textContent = `Количество шагов ${movingCounter}`
+      moveCounter.textContent = `Количество шагов ${movingCounter}`;
       handleClick(myBoard[cell], cellButton);
       if (!isTimerStarted && !gameOver) {
         isTimerStarted = true;
